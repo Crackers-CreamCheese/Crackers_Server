@@ -1,0 +1,42 @@
+package com.creamcheese.crackers.global.exception;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+
+import static org.springframework.http.HttpStatus.*;
+
+@Getter
+@RequiredArgsConstructor
+public enum ErrorCode {
+	/* Common */
+	// Basic - C0***
+	RUNTIME_EXCEPTION(BAD_REQUEST, "C0001", "RUNTIME_EXCEPTION"),
+	METHOD_NOT_ALLOWED(BAD_REQUEST, "C0002", "METHOD_NOT_ALLOWED"),
+
+	BAD_DATE_REQUEST(BAD_REQUEST, "C1003", "BAD_DATE_REQUEST"),
+
+	// User - C2***
+	LOGINID_DUPLICATE(CONFLICT, "C2002", "DUPLICATE_LOGINID_EXISTS"),
+	ACCOUNT_NOT_FOUND(NOT_FOUND, "C2003", "USER_NOT_FOUND"),
+	PASSWORD_NOT_MATCH(BAD_REQUEST, "C2004", "PASSWORD_NOT_MATCH"),
+	PASSWORDS_NOT_EQUAL(BAD_REQUEST, "C2006", "PASSWORDS_NOT_EQUAL"),
+	CERTIFICATION_CODE_NOT_MATCH(BAD_REQUEST, "C2007", "CERTIFICATIONCODE_NOT_MATCH"),
+
+	// TOKEN - E1***
+	TOKEN_VALIDATE_FAILURE(BAD_REQUEST, "E1001", "INVALID_TOKEN"),
+	REFRESHTOKEN_EXPIRED(BAD_REQUEST, "E1002", "REFRESHTOKEN_EXPIRED"),
+
+	// WORKSPACE - E2***
+	WORKSPACE_NOT_FOUND(NOT_FOUND, "E2001", "WORKSPACE_NOT_FOUND"),
+
+	// WORKHISTORY - E3***
+	WORKHISTORY_NOT_FOUND(NOT_FOUND, "E3001", "WORKHISTORY_NOT_FOUND"),
+
+	//SUCCESS
+	LOGOUT_SUCCESS(OK, "S0001", "LOGOUT_SUCCESS");
+
+	private final HttpStatus status;
+	private final String code;
+	private final String message;
+}
