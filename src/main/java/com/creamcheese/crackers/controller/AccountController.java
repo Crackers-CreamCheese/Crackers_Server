@@ -22,7 +22,7 @@ import static com.creamcheese.crackers.constant.ResponseConstant.WITHDRAW_SUCCES
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/accounts")
+@RequestMapping("/api/v2/accounts")
 public class AccountController {
 	private final AccountService accountService;
 
