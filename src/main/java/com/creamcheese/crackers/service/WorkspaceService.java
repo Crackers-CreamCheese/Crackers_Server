@@ -1,6 +1,7 @@
 package com.creamcheese.crackers.service;
 
 import com.creamcheese.crackers.domain.Account.Account;
+import com.creamcheese.crackers.domain.Account.AccountRepository;
 import com.creamcheese.crackers.dto.workspace.WorkspaceReqDto;
 import com.creamcheese.crackers.dto.workspace.WorkspaceResDto;
 import com.creamcheese.crackers.dto.workspace.WorkspaceUpdateReqDto;
@@ -30,10 +31,11 @@ public class WorkspaceService {
 	private final CategoryRepository categoryRepository;
 	private final ScheduleRepository scheduleRepository;
 	private final AccountService accountService;
+	private final AccountRepository accountRepository;
 
 
 	public Workspace create(WorkspaceReqDto requestDto) {
-		Account account = accountService.findByLoginId(requestDto.getLoginId());
+		Account account = accountRepository.findByLoginId(requestDto.getLoginId());
 		Category category = findByCategoryId(requestDto.getCategoryId());
 		Workspace workspace = workspaceRepository.save(requestDto.toEntity(account, category));
 
@@ -46,7 +48,7 @@ public class WorkspaceService {
 	}
 
 	public List<WorkspaceResDto> search(String loginId) {
-		Account account = accountService.findByLoginId(loginId);
+		Account account = accountRepository.findByLoginId(loginId);
 		List<Workspace> workspaces = findWorkspaceByAccount(account);
 		List<WorkspaceResDto> workspaceResDtos = workspaces.stream()
 				.map(i -> new WorkspaceResDto(i)).collect(Collectors.toList());
@@ -55,7 +57,7 @@ public class WorkspaceService {
 
 
 	public Workspace update(WorkspaceUpdateReqDto requestDto) {
-		Account account = accountService.findByLoginId(requestDto.getLoginId());
+		Account account = accountRepository.findByLoginId(requestDto.getLoginId());
 		Workspace workspace = findByWorkspaceId(requestDto.getWorkspaceId());
 		List<Schedule> scheduleList = scheduleRepository.saveAll(requestDto.getScheduleList().stream().filter(Objects::nonNull).map(scheduleReqDto -> scheduleReqDto.toEntity(workspace)).collect(Collectors.toList()));
 		workspace.update(scheduleList, requestDto.getWage(), requestDto.getName());

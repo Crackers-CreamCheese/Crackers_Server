@@ -22,12 +22,12 @@ import static com.creamcheese.crackers.domain.Account.AccountStatus.UNREGISTERED
 @Getter
 public class Account extends BaseTimeEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "account_id", updatable = false)
-	private Integer accountId;
+//	@Id
+//	@GeneratedValue(strategy = GenerationType.IDENTITY)
+//	@Column(name = "account_id", updatable = false)
+//	private Integer accountId;
 
-//	@GeneratedValue
+	@Id
 	@NotNull(message = "아이디는 필수입니다.")
 	private String loginId;
 
