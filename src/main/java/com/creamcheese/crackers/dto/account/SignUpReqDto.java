@@ -1,16 +1,14 @@
 package com.creamcheese.crackers.dto.account;
 
 import com.creamcheese.crackers.domain.Account.Account;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SignUpReqDto {
 

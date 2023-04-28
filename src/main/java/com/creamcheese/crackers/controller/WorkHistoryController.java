@@ -4,10 +4,12 @@ import com.creamcheese.crackers.dto.workHistory.WorkHistoryDelReqDto;
 import com.creamcheese.crackers.dto.workHistory.WorkHistoryMessageDto;
 import com.creamcheese.crackers.dto.workHistory.WorkHistoryReqDto;
 import com.creamcheese.crackers.dto.workHistory.WorkHistoryResDto;
+import com.creamcheese.crackers.jwt.PrincipalDetails;
 import com.creamcheese.crackers.service.WorkHistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -30,10 +32,10 @@ public class WorkHistoryController {
 				.body(new WorkHistoryMessageDto(requestDto.getWorkDt() + HISTORY_CREATE_SUCCESS));
 	}
 
-	@GetMapping("/{nickname}")
-	public List<WorkHistoryResDto> getAllHistory(@PathVariable String nickname) {
-		// TODO: @AuthUsers를 통해 현재 로그인한 유저 조회 -> nickname 안 받도록!
-		return workHistoryService.getAllHistory(nickname);
+	@GetMapping("")
+	public List<WorkHistoryResDto> getAllHistory(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+		String loginId = principalDetails.getUsername();
+		return workHistoryService.getAllHistory(loginId);
 	}
 
 	@GetMapping("/{workspaceName}")
