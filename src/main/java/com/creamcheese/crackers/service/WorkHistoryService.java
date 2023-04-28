@@ -32,7 +32,6 @@ public class WorkHistoryService {
 
 	@Transactional
 	public void create(WorkHistoryReqDto requestDto) {
-
 		Workspace workspace = workspaceRepository.findById(requestDto.getWorkspaceId())
 				.orElseThrow(WorkspaceNotFoundException::new);
 		WorkHistory workHistory = requestDto.toEntity(workspace);
@@ -40,9 +39,11 @@ public class WorkHistoryService {
 		workHistoryRepository.save(workHistory);
 	}
 
-	public List<WorkHistoryResDto> getAllHistory(String nickname) {
-		Account account = accountRepository.findByNickname(nickname)
-				.orElseThrow(AccountNotFoundException::new);
+	public List<WorkHistoryResDto> getAllHistory(String loginId) {
+		Account account = accountRepository.findByLoginId(loginId);
+		if(account==null){
+			throw new AccountNotFoundException();
+		}
 
 		return workspaceRepository.findByAccount(account)
 				.stream().filter(Objects::nonNull)

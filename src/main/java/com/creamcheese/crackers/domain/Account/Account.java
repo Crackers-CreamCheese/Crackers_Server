@@ -27,6 +27,7 @@ public class Account extends BaseTimeEntity {
 	@Column(name = "account_id", updatable = false)
 	private Integer accountId;
 
+//	@GeneratedValue
 	@NotNull(message = "아이디는 필수입니다.")
 	private String loginId;
 

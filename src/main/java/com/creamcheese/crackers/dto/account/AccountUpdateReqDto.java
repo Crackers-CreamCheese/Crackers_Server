@@ -10,15 +10,12 @@ import javax.validation.constraints.NotNull;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AccountUpdateReqDto {
-	@NotNull(message = "아이디는 필수입니다.")
-	private String loginId;
 	@NotNull(message = "닉네임은 필수입니다.")
 	private String nickname;
 
 
 	@Builder
-	public AccountUpdateReqDto(String loginId, String nickname) {
-		this.loginId = loginId;
+	public AccountUpdateReqDto(String nickname) {
 		this.nickname = nickname;
 	}
 }
