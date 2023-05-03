@@ -6,7 +6,10 @@
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
 
 name: Java CI with Gradle
-
+  
+env: 
+  SC_BUCKET_NAME: cc-github-actions-s3-bucket
+  
 on:
   push:
     branches: [ "main" ]
@@ -42,3 +45,5 @@ jobs:
         aws-access-key-id: ${{ secrets.ACCESS_KEY }} # 등록한 Github Secret이 자동으로 불려온다.
         aws-secret-access-key: ${{ secrets.SECRET_KEY }} # 등록한 Github Secret이 자동으로 불려온다.
         aws-region: ap-northeast-2
+    - name: Upload to S3
+      run: aws s3 cp --region ap-northeast-2 ./practice-deploy.zip s3://$S3_BUCKET_NAME/practice-deploy.zip
