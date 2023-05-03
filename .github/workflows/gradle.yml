@@ -8,7 +8,7 @@
 name: Java CI with Gradle
   
 env: 
-  SC_BUCKET_NAME: cc-github-actions-s3-bucket
+  S3_BUCKET_NAME: cc-github-actions-s3-bucket
   
 on:
   push:
