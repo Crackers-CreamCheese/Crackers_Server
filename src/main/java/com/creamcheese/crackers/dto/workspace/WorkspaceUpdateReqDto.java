@@ -14,9 +14,6 @@ public class WorkspaceUpdateReqDto {
 	@NotBlank
 	private Integer workspaceId;
 
-	@NotBlank(message = "아이디를 필수로 입력해주세요.")
-	private String loginId;
-
 	@NotBlank(message = "근무지 이름을 입력해주세요.")
 	private String name;
 

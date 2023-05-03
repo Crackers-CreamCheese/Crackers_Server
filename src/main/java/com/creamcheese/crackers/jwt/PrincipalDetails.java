@@ -6,10 +6,12 @@ import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 
-@Data
+@SuppressWarnings("serial")
 public class PrincipalDetails implements UserDetails {
 
     private Account account;
@@ -18,6 +20,9 @@ public class PrincipalDetails implements UserDetails {
         this.account = account;
     }
 
+    public Account getAccount(){
+        return account;
+    }
 //    @Override
 //    public Map<String, Object> getAttributes() {
 //        return null;
@@ -25,15 +30,14 @@ public class PrincipalDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-//        Collection<GrantedAuthority> collection = new ArrayList<>();
-////        collection.add(new GrantedAuthority() {
+        Collection<GrantedAuthority> collection = new ArrayList<>();
+//        collection.add(new GrantedAuthority() {
 ////            @Override
 ////            public String getAuthority() {
 ////                return account.getStatus();
 ////            }
-////        });
-//        return collection;
-        return null;
+//        });
+        return collection;
     }
 
     @Override

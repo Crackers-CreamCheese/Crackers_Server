@@ -10,6 +10,9 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CardGenerateDTO {
 
+//    @NotNull
+//    private Integer cardId;
+
     @NotNull
     private String prev;
 
@@ -24,14 +27,14 @@ public class CardGenerateDTO {
 
     private Boolean round;
 
-    @Builder
-    public CardGenerateDTO(String prev, String next, String unit, Double per1min, Boolean round){
-        this.prev = prev;
-        this.next = next;
-        this.unit = unit;
-        this.per1min = per1min;
-        this.round = round;
-    }
+//    @Builder
+//    public CardGenerateDTO(String prev, String next, String unit, Double per1min, Boolean round){
+//        this.prev = prev;
+//        this.next = next;
+//        this.unit = unit;
+//        this.per1min = per1min;
+//        this.round = round;
+//    }
 
     public Card toEntity(){
         return Card.builder()

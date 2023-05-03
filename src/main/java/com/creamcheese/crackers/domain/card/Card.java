@@ -16,7 +16,7 @@ public class Card extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "card_id")
+    @Column(name = "card_id", updatable = false)
     private Integer cardId;
 
     @NotNull
@@ -46,9 +46,4 @@ public class Card extends BaseTimeEntity {
         this.per1min = per1min;
         this.round = round;
     }
-
-    public Card(Card toEntity) {
-        super();
-    }
-
 }

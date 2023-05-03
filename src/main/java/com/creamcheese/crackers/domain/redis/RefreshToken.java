@@ -1,8 +1,8 @@
 package com.creamcheese.crackers.domain.redis;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
-import javax.persistence.Id;
 
 @RedisHash(value = "refreshToken", timeToLive = 60)
 public class RefreshToken {

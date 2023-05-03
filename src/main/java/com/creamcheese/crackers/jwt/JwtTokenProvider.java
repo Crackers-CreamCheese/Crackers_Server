@@ -4,12 +4,15 @@ import com.creamcheese.crackers.dto.token.TokenDTO;
 import com.creamcheese.crackers.exception.CustomExcetpion;
 import com.creamcheese.crackers.exception.ErrorCode;
 import io.jsonwebtoken.*;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
@@ -17,15 +20,17 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Base64;
 import java.util.Date;
 
+@Component
+@RequiredArgsConstructor
+@Slf4j
 public class JwtTokenProvider {
 
     private final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
 
-    private UserDetailsServiceImpl userDetailsService;
-    private RedisUtil redisUtil;
+    private final UserDetailsServiceImpl userDetailsService;
+    private final RedisUtil redisUtil;
 
     @Value("${spring.jwt.secret}")
-
     private String secretKey;
 
     private long accessTokenValidTime = 60 * 60 * 24 * 1000L;               // 24 hour
@@ -37,13 +42,13 @@ public class JwtTokenProvider {
     }
 
     public String createAccessToken(String loginId){
+
         return createToken(loginId, accessTokenValidTime);
     }
 
     public String createRefreshToken(String loginId){
         String refreshToken = createToken(loginId, refreshTokenValidTime);
         redisUtil.setRedisRefreshToken(loginId, refreshToken);
-
         return refreshToken;
     }
 

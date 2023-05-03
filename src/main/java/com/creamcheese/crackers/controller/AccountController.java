@@ -43,9 +43,15 @@ public class AccountController {
 			@RequestBody @Valid final AccountUpdateReqDto requestDto,
 			@AuthenticationPrincipal PrincipalDetails principalDetails) {
 		Account account = principalDetails.getAccount();
-		accountService.update(requestDto, account);
+
 		return ResponseEntity.ok()
-				.body(new AccountResDto(account));
+				.body(accountService.update(requestDto, account));
+	}
+
+	@GetMapping("/profile")
+	public ResponseEntity<AccountResDto> profile(@AuthenticationPrincipal PrincipalDetails principalDetails){
+		return ResponseEntity.ok()
+				.body(new AccountResDto(principalDetails.getAccount()));
 	}
 
 	@PatchMapping("/withdraw")
@@ -63,9 +69,9 @@ public class AccountController {
 	@PostMapping("/signin")
 	public ResponseEntity<TokenDTO> signIn(@RequestBody @Valid final SignInReqDto requestDto)
 	{
-		accountService.signIn(requestDto);
+		TokenDTO tokenDTO = accountService.signIn(requestDto);
 		return ResponseEntity.ok()
-				.body(new TokenDTO());
+				.body(tokenDTO);
 	}
 
 	@PostMapping("/token/refresh")
