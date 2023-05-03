@@ -1,0 +1,75 @@
+name: Test CI/CD with Gradle
+
+on:
+  push:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+    # Checkout
+    - name: Checkout
+      uses: actions/checkout@v3
+    
+    # JDK Set-up
+    - name: Set up JDK 11
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+    
+    # Gradle caching
+    - name: Gradle Caching
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+    
+    # create application-secret.yml
+    - name: Create application-secret.yml
+      run: |
+        # application-secret.yml 생성
+        touch ./src/main/resources/application-secret.yml 
+        
+        # Secrets의 APPLICATION_SECRET 값을 application-secret.yml에 쓰기
+        echo "${{ secrets.APPLICATION_SECRET }}" > ./src/main/resources/application-secret.yml
+      shell: bash
+    
+    # Build with Gradle
+    - name: Build with Gradle
+      run: ./gradlew build -x test
+    
+
+    # Github Action IP 가져오기
+    - name: Get Github Actions IP
+      id: ip
+      uses: haythem/public-ip@v1.3
+
+    # EC2
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.ACCESS_KEY }}
+        aws-secret-access-key: ${{ secrets.SECRET_KEY }}
+        aws-region: ap-northeast-2
+
+    # 보안 그룹에 ip 추가
+    - name: Add Github Actions IP to Security group
+      run: |
+        aws ec2 authorize-security-group-ingress --group-id ${{ secrets.AWS_EC2_SG_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+
+    # 보안 그룹에서 ip 삭제
+    - name: Remove Github Actions IP From Security Group
+      run: |
+        aws ec2 revoke-security-group-ingress --group-id ${{ secrets.AWS_EC2_SG_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
