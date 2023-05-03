@@ -11,8 +11,11 @@ import com.creamcheese.crackers.domain.card.CardRepository;
 import com.creamcheese.crackers.domain.card.UserCard;
 import com.creamcheese.crackers.domain.card.UserCardRepository;
 import com.creamcheese.crackers.dto.card.CardGenerateDTO;
+import com.creamcheese.crackers.exception.CustomException.UserCardAlreadyExists;
 import com.creamcheese.crackers.exception.CustomException.UserCardNotFoundException;
 import com.creamcheese.crackers.exception.CustomException.WorkHistoryNotFoundException;
+import com.creamcheese.crackers.exception.CustomExcetpion;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,20 +24,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class CardService {
 
+    @Autowired
     private CardRepository cardRepository;
+
+    @Autowired
     private UserCardRepository userCardRepository;
-    private AccountRepository accountRepository;
-    private WorkspaceRepository workspaceRepository;
+
+//    @Autowired
+//    private AccountRepository accountRepository;
+//
+//    @Autowired
+//    private WorkspaceRepository workspaceRepository;
+//
+    @Autowired
     private WorkHistoryRepository workHistoryRepository;
 
     //유저카드 생성
     @Transactional
     public String generateUserCard(Account account, Integer workHistoryId, Integer randNum){
-        Card card = cardRepository.findByCardId(randNum);
         WorkHistory workHistory = workHistoryRepository.findById(workHistoryId)
                 .orElseThrow(WorkHistoryNotFoundException::new);
+
+        if(userCardRepository.existsByWorkHistory(workHistory)){
+            throw new UserCardAlreadyExists();
+        }
+
+        Card card = cardRepository.findByCardId(randNum);
         UserCard userCard = new UserCard(account, card, workHistory);
         userCardRepository.save(userCard);
         return generateSentence(workHistory, card);
@@ -42,7 +60,8 @@ public class CardService {
 
     //카드 개별조회
     @Transactional
-    public String findUserCard(WorkHistory workHistory){
+    public String findUserCard(Integer historyId){
+        WorkHistory workHistory = workHistoryRepository.findByHistoryId(historyId);
         UserCard userCard = userCardRepository.findByWorkHistory(workHistory)
                 .orElseThrow(UserCardNotFoundException::new);
         return generateSentence(workHistory, userCard.getCard());
@@ -75,10 +94,13 @@ public class CardService {
         return card.getPrev()+" "+calc+card.getUnit()+" "+card.getNext();
     }
 
-//    //관리자) 새로운 종류의 카드(단위) 추가
-//    @Transactional
-//    public void createCard(CardGenerateDTO cardGenerateDTO){
-//        Card card = new Card(cardGenerateDTO.toEntity());
-//        cardRepository.save(card);
-//    }
+    //관리자) 새로운 종류의 카드(단위) 추가
+    @Transactional
+    public Card createCard(CardGenerateDTO cardGenerateDTO){
+//        Card card = new Card(cardGenerateDTO.getPrev(), cardGenerateDTO.getNext(), cardGenerateDTO.getUnit(), cardGenerateDTO.getPer1min(), cardGenerateDTO.getRound());
+        Card card = cardGenerateDTO.toEntity();
+        log.info(card.getPrev());
+        cardRepository.save(card);
+        return card;
+    }
 }

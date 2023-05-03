@@ -15,8 +15,6 @@ import java.util.List;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class WorkspaceReqDto {
-	@NotBlank(message = "아이디를 필수로 입력해주세요.")
-	private String loginId;
 
 	@NotNull(message = "근무지 이름을 입력해주세요.")
 	private String name;
@@ -28,8 +26,7 @@ public class WorkspaceReqDto {
 	private Integer categoryId;
 
 	@Builder
-	public WorkspaceReqDto(String loginId, String name, Integer wage, Integer categoryId) {
-		this.loginId = loginId;
+	public WorkspaceReqDto(String name, Integer wage, Integer categoryId) {
 		this.name = name;
 		this.wage = wage;
 		this.categoryId = categoryId;

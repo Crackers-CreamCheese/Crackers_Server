@@ -27,7 +27,7 @@ public class WorkHistoryResDto {
 
 	@Builder
 	public WorkHistoryResDto(WorkHistory workHistory){
-		this.workHistoryId = workHistory.getId();
+		this.workHistoryId = workHistory.getHistoryId();
 		this.workspaceId = workHistory.getWorkspace().getId();
 		this.workspaceName = workHistory.getWorkspace().getName();
 		this.workDt = workHistory.getWorkDt();

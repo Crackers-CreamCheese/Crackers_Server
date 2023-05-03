@@ -1,11 +1,8 @@
 package com.creamcheese.crackers.service;
 
 import antlr.Token;
-import com.creamcheese.crackers.dto.account.AccountUpdateReqDto;
-import com.creamcheese.crackers.dto.account.SignInReqDto;
-import com.creamcheese.crackers.dto.account.WithdrawReqDto;
+import com.creamcheese.crackers.dto.account.*;
 import com.creamcheese.crackers.domain.Account.Account;
-import com.creamcheese.crackers.dto.account.SignUpReqDto;
 import com.creamcheese.crackers.domain.Account.AccountRepository;
 import com.creamcheese.crackers.dto.token.TokenDTO;
 import com.creamcheese.crackers.exception.CustomException.AccountNotFoundException;
@@ -42,19 +39,19 @@ public class AccountService {
 		if (isExistedLoginId(requestDto.getLoginId())) {
 			throw new LoginIdDuplicateException();
 		}
-
 		String accessToken = jwtTokenProvider.createAccessToken(requestDto.getLoginId());
 		String refreshToken = jwtTokenProvider.createRefreshToken(requestDto.getLoginId());
 		TokenDTO tokenDTO = new TokenDTO(accessToken, refreshToken);
-
 		requestDto.setPassword(passwordEncoder.encode(requestDto.getPassword()));
 		accountRepository.save(requestDto.toEntity());
 		return tokenDTO;
 	}
 
 	@Transactional
-	public void update(AccountUpdateReqDto requestDto, Account account) {
+	public AccountResDto update(AccountUpdateReqDto requestDto, Account account) {
 		account.updateAccount(requestDto.getNickname());
+		accountRepository.save(account);
+		return new AccountResDto(account);
 	}
 
 	@Transactional
@@ -90,12 +87,16 @@ public class AccountService {
 
 
 	@Transactional
-	public void signIn(SignInReqDto requestDto) {
+	public TokenDTO signIn(SignInReqDto requestDto) {
 		Account account = accountRepository.findByLoginId(requestDto.getLoginId());
 		String encodePw = account.getEncodedPassword();
 		if (!passwordEncoder.matches(requestDto.getPassword(), encodePw)) {
 			throw new PasswordNotMatchException();
 		}
+		String accessToken = jwtTokenProvider.createAccessToken(requestDto.getLoginId());
+		String refreshToken = jwtTokenProvider.createRefreshToken(requestDto.getLoginId());
+		TokenDTO tokenDTO = new TokenDTO(accessToken, refreshToken);
+		return tokenDTO;
 	}
 
 	@Transactional

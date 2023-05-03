@@ -8,4 +8,8 @@ import java.util.List;
 @Repository
 public interface WorkHistoryRepository extends JpaRepository<WorkHistory, Integer> {
 	List<WorkHistory> findByWorkspaceId(Integer workspaceId);
+
+	WorkHistory findByHistoryId(Integer historyId);
+
+	boolean existsByHistoryId(Integer historyId);
 }

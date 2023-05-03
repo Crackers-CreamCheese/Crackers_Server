@@ -33,15 +33,21 @@ public class CardController {
                 .body(sentence);
     }
 
-    @GetMapping("")
-    public ResponseEntity<String> findUserCard(WorkHistory workHistory){
+    @GetMapping("/{historyId}")
+    public ResponseEntity<String> findUserCard(@PathVariable Integer historyId){
         return ResponseEntity.ok()
-                .body(cardService.findUserCard(workHistory));
+                .body(cardService.findUserCard(historyId));
     }
 
     @GetMapping("/all")
     public ResponseEntity<List<String>> findAllUserCard(@AuthenticationPrincipal PrincipalDetails principalDetails){
         return ResponseEntity.ok()
                 .body(cardService.findAllUserCard(principalDetails.getAccount()));
+    }
+
+    @PostMapping("/admin")
+    public ResponseEntity<Card> createCard(@RequestBody CardGenerateDTO cardGenerateDTO){
+        return ResponseEntity.ok()
+                .body(cardService.createCard(cardGenerateDTO));
     }
 }

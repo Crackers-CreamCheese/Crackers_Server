@@ -34,11 +34,9 @@ public class WorkspaceService {
 	private final AccountRepository accountRepository;
 
 
-	public Workspace create(WorkspaceReqDto requestDto) {
-		Account account = accountRepository.findByLoginId(requestDto.getLoginId());
+	public Workspace create(WorkspaceReqDto requestDto, Account account) {
 		Category category = findByCategoryId(requestDto.getCategoryId());
 		Workspace workspace = workspaceRepository.save(requestDto.toEntity(account, category));
-
 		List<Schedule> scheduleList = scheduleRepository.saveAll(requestDto.getScheduleList().stream().filter(Objects::nonNull)
 				.map(scheduleReqDto -> scheduleReqDto.toEntity(workspace)).collect(Collectors.toList()));
 		for (Schedule schedule : scheduleList) {
@@ -47,8 +45,7 @@ public class WorkspaceService {
 		return workspace;
 	}
 
-	public List<WorkspaceResDto> search(String loginId) {
-		Account account = accountRepository.findByLoginId(loginId);
+	public List<WorkspaceResDto> search(Account account) {
 		List<Workspace> workspaces = findWorkspaceByAccount(account);
 		List<WorkspaceResDto> workspaceResDtos = workspaces.stream()
 				.map(i -> new WorkspaceResDto(i)).collect(Collectors.toList());
@@ -56,8 +53,7 @@ public class WorkspaceService {
 	}
 
 
-	public Workspace update(WorkspaceUpdateReqDto requestDto) {
-		Account account = accountRepository.findByLoginId(requestDto.getLoginId());
+	public Workspace update(WorkspaceUpdateReqDto requestDto, Account account) {
 		Workspace workspace = findByWorkspaceId(requestDto.getWorkspaceId());
 		List<Schedule> scheduleList = scheduleRepository.saveAll(requestDto.getScheduleList().stream().filter(Objects::nonNull).map(scheduleReqDto -> scheduleReqDto.toEntity(workspace)).collect(Collectors.toList()));
 		workspace.update(scheduleList, requestDto.getWage(), requestDto.getName());

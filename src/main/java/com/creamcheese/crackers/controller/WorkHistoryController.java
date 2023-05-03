@@ -19,7 +19,7 @@ import static com.creamcheese.crackers.constant.ResponseConstant.HISTORY_CREATE_
 import static com.creamcheese.crackers.constant.ResponseConstant.HISTORY_DELETE_SUCCESS;
 
 @RestController
-@RequestMapping("/api/v1/history")
+@RequestMapping("/api/v2/history")
 @RequiredArgsConstructor
 public class WorkHistoryController {
 	private final WorkHistoryService workHistoryService;

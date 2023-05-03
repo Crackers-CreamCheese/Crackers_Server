@@ -19,7 +19,7 @@ public class WorkHistory extends BaseTimeEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "history_id", updatable = false)
-	private Integer id;
+	private Integer historyId;
 
 	@ManyToOne
 	@JoinColumn(name = "workspace_id")
