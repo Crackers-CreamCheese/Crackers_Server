@@ -1,41 +1,39 @@
-name: Test CI/CD with Gradle
+name: Deploy to Amazon EC2
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
+
+# 본인이 설정한 값을 여기서 채워넣습니다.
+# 리전, 버킷 이름, CodeDeploy 앱 이름, CodeDeploy 배포 그룹 이름
+env:
+  AWS_REGION: ap-northeast-2
+  S3_BUCKET_NAME: cc-github-actions-s3-bucket
+  CODE_DEPLOY_APPLICATION_NAME: cc-codedeploy-app
+  CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: cc-codedeploy-deployment-group
 
 permissions:
   contents: read
 
 jobs:
-  build:
+  deploy:
+    name: Deploy
     runs-on: ubuntu-latest
-    steps:
+    environment: production
 
-    # Checkout
+    steps:
+    # (1) 기본 체크아웃
     - name: Checkout
       uses: actions/checkout@v3
-    
-    # JDK Set-up
+
+    # (2) JDK 11 세팅
     - name: Set up JDK 11
       uses: actions/setup-java@v3
       with:
-        java-version: '11'
         distribution: 'temurin'
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-    
-    # Gradle caching
-    - name: Gradle Caching
-      uses: actions/cache@v3
-      with:
-        path: |
-          ~/.gradle/caches
-          ~/.gradle/wrapper
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-        restore-keys: |
-          ${{ runner.os }}-gradle-
-    
+        java-version: '11'
+        
     # create application-secret.yml
     - name: Create application-secret.yml
       run: |
@@ -45,31 +43,35 @@ jobs:
         # Secrets의 APPLICATION_SECRET 값을 application-secret.yml에 쓰기
         echo "${{ secrets.APPLICATION_SECRET }}" > ./src/main/resources/application-secret.yml
       shell: bash
-    
-    # Build with Gradle
+      
+    # (3) Gradle build (Test 제외)
     - name: Build with Gradle
-      run: ./gradlew build -x test
-    
+      uses: gradle/gradle-build-action@0d13054264b0bb894ded474f08ebb30921341cee
+      with:
+        arguments: clean build -x test
 
-    # Github Action IP 가져오기
-    - name: Get Github Actions IP
-      id: ip
-      uses: haythem/public-ip@v1.3
-
-    # EC2
-    - name: Configure AWS Credentials
+    # (4) AWS 인증 (IAM 사용자 Access Key, Secret Key 활용)
+    - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ secrets.ACCESS_KEY }}
         aws-secret-access-key: ${{ secrets.SECRET_KEY }}
-        aws-region: ap-northeast-2
+        aws-region: ${{ env.AWS_REGION }}
 
-    # 보안 그룹에 ip 추가
-    - name: Add Github Actions IP to Security group
+    # (5) 빌드 결과물을 S3 버킷에 업로드
+    - name: Upload to AWS S3
       run: |
-        aws ec2 authorize-security-group-ingress --group-id ${{ secrets.AWS_EC2_SG_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+        aws deploy push \
+          --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
+          --ignore-hidden-files \
+          --s3-location s3://$S3_BUCKET_NAME/$GITHUB_SHA.zip \
+          --source .
 
-    # 보안 그룹에서 ip 삭제
-    - name: Remove Github Actions IP From Security Group
+    # (6) S3 버킷에 있는 파일을 대상으로 CodeDeploy 실행
+    - name: Deploy to AWS EC2 from S3
       run: |
-        aws ec2 revoke-security-group-ingress --group-id ${{ secrets.AWS_EC2_SG_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+        aws deploy create-deployment \
+          --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
+          --deployment-config-name CodeDeployDefault.AllAtOnce \
+          --deployment-group-name ${{ env.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }} \
+          --s3-location bucket=$S3_BUCKET_NAME,key=$GITHUB_SHA.zip,bundleType=zip
