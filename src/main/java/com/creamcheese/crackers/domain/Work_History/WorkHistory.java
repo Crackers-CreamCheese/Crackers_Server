@@ -1,6 +1,7 @@
 package com.creamcheese.crackers.domain.Work_History;
 
 import com.creamcheese.crackers.domain.Workspace.Workspace;
+import com.creamcheese.crackers.domain.card.UserCard;
 import com.creamcheese.crackers.entity.BaseTimeEntity;
 import lombok.AccessLevel;
 import lombok.Builder;

@@ -29,7 +29,7 @@ public class UserCard extends BaseTimeEntity {
     @JoinColumn(name = "card_id")
     private Card card;
 
-    @ManyToOne
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "history_id")
     private WorkHistory workHistory;
 

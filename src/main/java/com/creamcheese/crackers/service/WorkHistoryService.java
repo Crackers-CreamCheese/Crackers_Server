@@ -2,6 +2,8 @@ package com.creamcheese.crackers.service;
 
 import com.creamcheese.crackers.domain.Account.Account;
 import com.creamcheese.crackers.domain.Account.AccountRepository;
+import com.creamcheese.crackers.domain.card.UserCard;
+import com.creamcheese.crackers.domain.card.UserCardRepository;
 import com.creamcheese.crackers.dto.workHistory.WorkHistoryDelReqDto;
 import com.creamcheese.crackers.dto.workHistory.WorkHistoryReqDto;
 import com.creamcheese.crackers.dto.workHistory.WorkHistoryResDto;
@@ -10,6 +12,7 @@ import com.creamcheese.crackers.domain.Work_History.WorkHistoryRepository;
 import com.creamcheese.crackers.domain.Workspace.Workspace;
 import com.creamcheese.crackers.domain.Workspace.WorkspaceRepository;
 import com.creamcheese.crackers.exception.CustomException.AccountNotFoundException;
+import com.creamcheese.crackers.exception.CustomException.UserCardNotFoundException;
 import com.creamcheese.crackers.exception.CustomException.WorkHistoryNotFoundException;
 import com.creamcheese.crackers.exception.CustomException.WorkspaceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +22,7 @@ import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,6 +33,7 @@ public class WorkHistoryService {
 	private final AccountRepository accountRepository;
 	private final WorkspaceRepository workspaceRepository;
 	private final WorkHistoryRepository workHistoryRepository;
+	private final UserCardRepository userCardRepository;
 
 	@Transactional
 	public void create(WorkHistoryReqDto requestDto) {
@@ -70,6 +75,12 @@ public class WorkHistoryService {
 	public void delete(WorkHistoryDelReqDto requestDto) {
 		WorkHistory workHistory = workHistoryRepository.findById(requestDto.getWorkHistoryId())
 				.orElseThrow(WorkHistoryNotFoundException::new);
+		UserCard userCard = userCardRepository.findByWorkHistory(workHistory)
+				.orElse(userCard = null);
+
+		if(userCard != null)
+			userCardRepository.delete(userCard);
+
 		workHistoryRepository.delete(workHistory);
 	}
 }
