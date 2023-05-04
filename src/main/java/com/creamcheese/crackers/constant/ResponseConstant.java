@@ -31,6 +31,7 @@ public class ResponseConstant {
 	public static final String WORKSPACE_NOT_FOUND = "근무지를 찾을 수 없습니다.";
 	public static final String WORKHISTORY_NOT_FOUND = "근무 기록을 찾을 수 없습니다.";
 
+	public static final String USERCARD_NOT_EXISTS = "생성된 유저카드가 없습니다.";
 	public static final String USERCARD_NOT_FOUND = "해당 근무 기록에 대한 유저 카드를 찾을 수 없습니다.";
 	public static final String USERCARD_ALREADY_EXISTS = "해당 기록에 대한 유저카드가 이미 존재합니다.";
 	// history

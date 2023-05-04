@@ -1,16 +1,21 @@
 package com.creamcheese.crackers.service;
 
 import com.creamcheese.crackers.domain.Account.Account;
+import com.creamcheese.crackers.domain.Account.AccountRepository;
 import com.creamcheese.crackers.domain.Work_History.WorkHistory;
 import com.creamcheese.crackers.domain.Work_History.WorkHistoryRepository;
+import com.creamcheese.crackers.domain.Workspace.Workspace;
+import com.creamcheese.crackers.domain.Workspace.WorkspaceRepository;
 import com.creamcheese.crackers.domain.card.Card;
 import com.creamcheese.crackers.domain.card.CardRepository;
 import com.creamcheese.crackers.domain.card.UserCard;
 import com.creamcheese.crackers.domain.card.UserCardRepository;
 import com.creamcheese.crackers.dto.card.CardGenerateDTO;
 import com.creamcheese.crackers.exception.CustomException.UserCardAlreadyExists;
+import com.creamcheese.crackers.exception.CustomException.UserCardNotExists;
 import com.creamcheese.crackers.exception.CustomException.UserCardNotFoundException;
 import com.creamcheese.crackers.exception.CustomException.WorkHistoryNotFoundException;
+import com.creamcheese.crackers.exception.CustomExcetpion;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -67,7 +72,8 @@ public class CardService {
     @Transactional
     public List<String> findAllUserCard(Account account){
         List<String> allSentences = new ArrayList<>();
-        List<UserCard> userCards = userCardRepository.findByAccount(account);
+        List<UserCard> userCards = userCardRepository.findByAccount(account)
+                .orElseThrow(UserCardNotExists::new);
         for(UserCard userCard : userCards){
             allSentences.add(generateSentence(userCard.getWorkHistory(), userCard.getCard()));
         }

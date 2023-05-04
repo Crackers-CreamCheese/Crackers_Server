@@ -13,7 +13,7 @@ public interface UserCardRepository extends JpaRepository<UserCard, Integer> {
 
     Optional<UserCard> findByWorkHistory(WorkHistory workHistory);
 
-    List<UserCard> findByAccount(Account account);
+    Optional<List<UserCard>> findByAccount(Account account);
 
     boolean existsByWorkHistory(WorkHistory workHistory);
 }
